@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Interactive Particle System</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: sans-serif;
+        }
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+        #instructions {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="instructions">
+        <h1>Digital Nebula</h1>
+        <p>Move mouse to rotate & change speed.</p>
+    </div>
+    <div id="canvas-container"></div>
+
+    <!-- Import Three.js from CDN -->
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+        // 1. SCENE SETUP
+        const scene = new THREE.Scene();
+        // Add a subtle fog for depth
+        scene.fog = new THREE.FogExp2(0x000000, 0.002);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 50;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // 2. CREATE PARTICLE GEOMETRY
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 15000; // Total number of particles
+
+        const posArray = new Float32Array(particlesCount * 3); // x, y, z
+        const colorsArray = new Float32Array(particlesCount * 3); // r, g, b
+
+        // Helpers for colors
+        const color1 = new THREE.Color(0x00ffff); // Cyan
+        const color2 = new THREE.Color(0xff00ff); // Magenta
+
+        for(let i = 0; i < particlesCount * 3; i+=3) {
+            // Position: Spread particles in a wide area
+            posArray[i] = (Math.random() - 0.5) * 100;     // x
+            posArray[i+1] = (Math.random() - 0.5) * 100;   // y
+            posArray[i+2] = (Math.random() - 0.5) * 100;   // z
+
+            // Color: Mix between Cyan and Magenta based on position
+            const mixedColor = color1.clone().lerp(color2, Math.random());
+            colorsArray[i] = mixedColor.r;
+            colorsArray[i+1] = mixedColor.g;
+            colorsArray[i+2] = mixedColor.b;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+
+        // 3. CREATE PARTICLE MATERIAL
+        // Create a circular texture programmatically so we don't need external images
+        const getDataURL = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+            gradient.addColorStop(0.5, 'rgba(255,255,255,0.2)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 32, 32);
+            return canvas.toDataURL();
+        };
+
+        const texture = new THREE.TextureLoader().load(getDataURL());
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.5,
+            map: texture,
+            transparent: true,
+            opacity: 0.8,
+            vertexColors: true, // Use the colors we defined in geometry
+            blending: THREE.AdditiveBlending, // Makes particles glow when they overlap
+            depthWrite: false // Prevents particles from occluding each other weirdly
+        });
+
+        // 4. MESH CREATION
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // 5. INTERACTIVITY SETUP
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - windowHalfX);
+            mouseY = (event.clientY - windowHalfY);
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // 6. ANIMATION LOOP
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            targetX = mouseX * 0.001;
+            targetY = mouseY * 0.001;
+
+            // Rotation interaction with easing
+            particlesMesh.rotation.y += 0.002 + (targetX * 0.05); // Base speed + mouse influence
+            particlesMesh.rotation.x += (targetY * 0.05);
+
+            // Wave motion logic
+            // We access the position array directly to manipulate vertices
+            const positions = particlesGeometry.attributes.position.array;
+            
+            // Note: Loops in JS can be heavy. We only animate a subset or use a simple formula for performance.
+            // Here we just gently pulse the whole system or specific movements could go here.
+            
+            // Let's create a gentle "breathing" scale effect based on mouse Y
+            const scale = 1 + Math.sin(elapsedTime * 0.5) * 0.05;
+            particlesMesh.scale.set(scale, scale, scale);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
