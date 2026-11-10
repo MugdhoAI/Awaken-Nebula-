@@ -117,6 +117,7 @@
         let targetY = 0;
         let paused = false;
         let speedMultiplier = 1;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         let windowHalfX = window.innerWidth / 2;
         let windowHalfY = window.innerHeight / 2;
@@ -163,11 +164,14 @@
                 targetY = mouseY * 0.001;
 
                 // Rotation interaction with easing
-                particlesMesh.rotation.y += (0.002 * speedMultiplier) + (targetX * 0.05); // Base speed + mouse influence
+                // With reduced motion on, only the mouse rotates the scene
+                const autoSpeed = prefersReducedMotion ? 0 : 0.002 * speedMultiplier;
+                particlesMesh.rotation.y += autoSpeed + (targetX * 0.05); // Base speed + mouse influence
                 particlesMesh.rotation.x += (targetY * 0.05);
 
-                // Gentle "breathing" scale effect
-                const scale = 1 + Math.sin(elapsedTime * 0.5) * 0.05;
+                // Gentle "breathing" scale effect, skipped for reduced motion
+                const breathe = prefersReducedMotion ? 0 : 0.05;
+                const scale = 1 + Math.sin(elapsedTime * 0.5) * breathe;
                 particlesMesh.scale.set(scale, scale, scale);
             }
 
