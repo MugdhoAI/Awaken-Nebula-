@@ -47,7 +47,9 @@
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        // Cap the pixel ratio: above 2 the extra fill rate costs far more
+        // performance than the small sharpness gain is worth.
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
         // 2. CREATE PARTICLE GEOMETRY
@@ -61,6 +63,10 @@
         const color1 = new THREE.Color(0x00ffff); // Cyan
         const color2 = new THREE.Color(0xff00ff); // Magenta
 
+        // Reuse one Color for the mix instead of cloning per particle:
+        // cloning inside this loop creates 15,000 throwaway objects.
+        const mixedColor = new THREE.Color();
+
         for(let i = 0; i < particlesCount * 3; i+=3) {
             // Position: Spread particles in a wide area
             posArray[i] = (Math.random() - 0.5) * 100;     // x
@@ -68,7 +74,7 @@
             posArray[i+2] = (Math.random() - 0.5) * 100;   // z
 
             // Color: Mix between Cyan and Magenta based on position
-            const mixedColor = color1.clone().lerp(color2, Math.random());
+            mixedColor.copy(color1).lerp(color2, Math.random());
             colorsArray[i] = mixedColor.r;
             colorsArray[i+1] = mixedColor.g;
             colorsArray[i+2] = mixedColor.b;
@@ -116,12 +122,13 @@
         let targetX = 0;
         let targetY = 0;
 
-        const windowHalfX = window.innerWidth / 2;
-        const windowHalfY = window.innerHeight / 2;
-
+        // Read the window size at event time instead of caching half
+        // sizes once at load. The cached values went stale after any
+        // resize, so the rotation centre no longer matched the middle
+        // of the window and the nebula drifted off centre.
         document.addEventListener('mousemove', (event) => {
-            mouseX = (event.clientX - windowHalfX);
-            mouseY = (event.clientY - windowHalfY);
+            mouseX = (event.clientX - window.innerWidth / 2);
+            mouseY = (event.clientY - window.innerHeight / 2);
         });
 
         window.addEventListener('resize', () => {
