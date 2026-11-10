@@ -23,6 +23,10 @@
             pointer-events: none;
             user-select: none;
         }
+        #stats {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85em;
+        }
     </style>
 </head>
 <body>
@@ -30,6 +34,7 @@
     <div id="instructions">
         <h1>Digital Nebula</h1>
         <p>Move mouse or drag to rotate and change speed. Space pauses, + and - change speed.</p>
+        <p id="stats"></p>
     </div>
     <div id="canvas-container"></div>
 
@@ -155,6 +160,23 @@
         // 6. ANIMATION LOOP
         const clock = new THREE.Clock();
 
+        // Live stats: particle count plus FPS, refreshed twice a second
+        const statsElement = document.getElementById('stats');
+        statsElement.textContent = `${particlesCount.toLocaleString()} particles`;
+        let framesCounted = 0;
+        let lastFpsTime = performance.now();
+
+        function updateStats() {
+            framesCounted++;
+            const now = performance.now();
+            if (now - lastFpsTime >= 500) {
+                const fps = Math.round((framesCounted * 1000) / (now - lastFpsTime));
+                statsElement.textContent = `${particlesCount.toLocaleString()} particles : ${fps} FPS`;
+                framesCounted = 0;
+                lastFpsTime = now;
+            }
+        }
+
         function animate() {
             requestAnimationFrame(animate);
             const elapsedTime = clock.getElapsedTime();
@@ -175,6 +197,7 @@
                 particlesMesh.scale.set(scale, scale, scale);
             }
 
+            updateStats();
             renderer.render(scene, camera);
         }
 
