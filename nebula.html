@@ -29,7 +29,7 @@
 
     <div id="instructions">
         <h1>Digital Nebula</h1>
-        <p>Move mouse or drag to rotate and change speed.</p>
+        <p>Move mouse or drag to rotate and change speed. Space pauses, + and - change speed.</p>
     </div>
     <div id="canvas-container"></div>
 
@@ -115,6 +115,8 @@
         let mouseY = 0;
         let targetX = 0;
         let targetY = 0;
+        let paused = false;
+        let speedMultiplier = 1;
 
         let windowHalfX = window.innerWidth / 2;
         let windowHalfY = window.innerHeight / 2;
@@ -129,6 +131,17 @@
             mouseX = (touch.clientX - windowHalfX);
             mouseY = (touch.clientY - windowHalfY);
         }, { passive: true });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                event.preventDefault();
+                paused = !paused;
+            } else if (event.key === '+' || event.key === '=') {
+                speedMultiplier = Math.min(speedMultiplier + 0.5, 5);
+            } else if (event.key === '-') {
+                speedMultiplier = Math.max(speedMultiplier - 0.5, 0);
+            }
+        });
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -145,23 +158,18 @@
             requestAnimationFrame(animate);
             const elapsedTime = clock.getElapsedTime();
 
-            targetX = mouseX * 0.001;
-            targetY = mouseY * 0.001;
+            if (!paused) {
+                targetX = mouseX * 0.001;
+                targetY = mouseY * 0.001;
 
-            // Rotation interaction with easing
-            particlesMesh.rotation.y += 0.002 + (targetX * 0.05); // Base speed + mouse influence
-            particlesMesh.rotation.x += (targetY * 0.05);
+                // Rotation interaction with easing
+                particlesMesh.rotation.y += (0.002 * speedMultiplier) + (targetX * 0.05); // Base speed + mouse influence
+                particlesMesh.rotation.x += (targetY * 0.05);
 
-            // Wave motion logic
-            // We access the position array directly to manipulate vertices
-            const positions = particlesGeometry.attributes.position.array;
-            
-            // Note: Loops in JS can be heavy. We only animate a subset or use a simple formula for performance.
-            // Here we just gently pulse the whole system or specific movements could go here.
-            
-            // Let's create a gentle "breathing" scale effect based on mouse Y
-            const scale = 1 + Math.sin(elapsedTime * 0.5) * 0.05;
-            particlesMesh.scale.set(scale, scale, scale);
+                // Gentle "breathing" scale effect
+                const scale = 1 + Math.sin(elapsedTime * 0.5) * 0.05;
+                particlesMesh.scale.set(scale, scale, scale);
+            }
 
             renderer.render(scene, camera);
         }
