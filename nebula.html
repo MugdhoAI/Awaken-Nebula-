@@ -29,7 +29,7 @@
 
     <div id="instructions">
         <h1>Digital Nebula</h1>
-        <p>Move mouse to rotate & change speed.</p>
+        <p>Move mouse or drag to rotate and change speed.</p>
     </div>
     <div id="canvas-container"></div>
 
@@ -123,6 +123,12 @@
             mouseX = (event.clientX - windowHalfX);
             mouseY = (event.clientY - windowHalfY);
         });
+
+        document.addEventListener('touchmove', (event) => {
+            const touch = event.touches[0];
+            mouseX = (touch.clientX - windowHalfX);
+            mouseY = (touch.clientY - windowHalfY);
+        }, { passive: true });
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
