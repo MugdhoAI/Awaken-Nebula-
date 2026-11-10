@@ -1,0 +1,1 @@
+{"description":"Interactive 3D particle visualization built with Three.js","name":"awaken-nebula","private":true,"scripts":{"test":"node tests/smoke.test.mjs"},"type":"module","version":"1.0.0"}
