@@ -33,6 +33,8 @@ The overlay shows the particle count and live FPS. If your system prefers reduce
 ## Features
 
 - 15,000 particles with a cyan to magenta gradient that shifts with distance from the center, positioned in a 100 unit cube
+- Particle count can be set with `?particles=` in the URL (1,000 to 50,000)
+- R resets the rotation and speed, and a Paused badge shows while the animation is paused
 - Procedural circular sprite texture, no image files needed
 - Additive blending and fog for a glowing nebula look
 - Eased mouse rotation with a gentle breathing scale effect
