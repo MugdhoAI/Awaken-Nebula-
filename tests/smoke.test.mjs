@@ -39,6 +39,7 @@ try {
 check('mouse center is recalculated on resize', html.includes('windowHalfX = window.innerWidth / 2;'));
 check('pixel ratio is capped', html.includes('Math.min(window.devicePixelRatio, 2)'));
 check('touch drag is handled', html.includes("addEventListener('touchmove'"));
+check('first touch rotates without a drag', html.includes("addEventListener('touchstart'"));
 check('touch drag does not scroll the page', html.includes('touch-action: none'));
 check('keyboard pause and speed controls exist', html.includes("event.code === 'Space'") && html.includes('speedMultiplier'));
 check('R key resets the view', html.includes("event.key === 'r'") && html.includes('particlesMesh.rotation.set(0, 0, 0)'));

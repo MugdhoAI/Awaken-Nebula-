@@ -150,15 +150,23 @@
         let windowHalfX = window.innerWidth / 2;
         let windowHalfY = window.innerHeight / 2;
 
+        function updatePointer(clientX, clientY) {
+            mouseX = (clientX - windowHalfX);
+            mouseY = (clientY - windowHalfY);
+        }
+
         document.addEventListener('mousemove', (event) => {
-            mouseX = (event.clientX - windowHalfX);
-            mouseY = (event.clientY - windowHalfY);
+            updatePointer(event.clientX, event.clientY);
         });
+
+        document.addEventListener('touchstart', (event) => {
+            const touch = event.touches[0];
+            updatePointer(touch.clientX, touch.clientY);
+        }, { passive: true });
 
         document.addEventListener('touchmove', (event) => {
             const touch = event.touches[0];
-            mouseX = (touch.clientX - windowHalfX);
-            mouseY = (touch.clientY - windowHalfY);
+            updatePointer(touch.clientX, touch.clientY);
         }, { passive: true });
 
         document.addEventListener('keydown', (event) => {
