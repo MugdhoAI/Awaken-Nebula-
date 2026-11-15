@@ -34,7 +34,7 @@
 
     <div id="instructions">
         <h1>Digital Nebula</h1>
-        <p>Move mouse or drag to rotate and change speed. Space pauses, + and - change speed.</p>
+        <p>Move mouse or drag to rotate and change speed. Space pauses, + and - change speed, R resets the view.</p>
         <p id="stats"></p>
     </div>
     <div id="canvas-container"></div>
@@ -148,6 +148,13 @@
                 speedMultiplier = Math.min(speedMultiplier + 0.5, 5);
             } else if (event.key === '-') {
                 speedMultiplier = Math.max(speedMultiplier - 0.5, 0);
+            } else if (event.key === 'r' || event.key === 'R') {
+                particlesMesh.rotation.set(0, 0, 0);
+                mouseX = 0;
+                mouseY = 0;
+                targetX = 0;
+                targetY = 0;
+                speedMultiplier = 1;
             }
         });
 

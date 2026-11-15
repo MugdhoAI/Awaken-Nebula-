@@ -24,6 +24,7 @@ Three.js 0.160.0 is loaded from the unpkg CDN, so an internet connection is need
 | Drag on touch screen | Rotate the nebula |
 | Space | Pause or resume the animation |
 | + / - | Speed up or slow down the base rotation |
+| R | Reset the rotation and speed |
 
 The overlay shows the particle count and live FPS. If your system prefers reduced motion, the automatic rotation and breathing effect stop, and only mouse or touch input rotates the scene.
 
