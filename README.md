@@ -16,6 +16,8 @@ Then open http://localhost:8000/nebula.html
 
 Three.js 0.160.0 is loaded from the unpkg CDN, so an internet connection is needed.
 
+You can also choose the particle count in the URL, for example `nebula.html?particles=5000` (1,000 to 50,000, default 15,000).
+
 ## Controls
 
 | Input | Effect |

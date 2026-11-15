@@ -43,6 +43,7 @@ check('touch drag does not scroll the page', html.includes('touch-action: none')
 check('keyboard pause and speed controls exist', html.includes("event.code === 'Space'") && html.includes('speedMultiplier'));
 check('R key resets the view', html.includes("event.key === 'r'") && html.includes('particlesMesh.rotation.set(0, 0, 0)'));
 check('pause shows a Paused badge', html.includes('id="paused-badge"') && html.includes(".hidden = !paused"));
+check('particle count can be set from the URL', html.includes('URLSearchParams') && html.includes("'particles'"));
 check('reduced motion is honored', html.includes("prefers-reduced-motion: reduce"));
 check('live FPS stats are updated', html.includes('updateStats()') && html.includes('FPS'));
 

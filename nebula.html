@@ -71,7 +71,11 @@
 
         // 2. CREATE PARTICLE GEOMETRY
         const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 15000; // Total number of particles
+        // Particle count can be set in the URL, for example ?particles=5000
+        const requestedParticles = Number(new URLSearchParams(window.location.search).get('particles'));
+        const particlesCount = Number.isFinite(requestedParticles)
+            ? Math.min(Math.max(Math.round(requestedParticles), 1000), 50000)
+            : 15000;
 
         const posArray = new Float32Array(particlesCount * 3); // x, y, z
         const colorsArray = new Float32Array(particlesCount * 3); // r, g, b
