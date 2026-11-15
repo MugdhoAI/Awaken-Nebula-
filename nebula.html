@@ -87,12 +87,16 @@
 
         for(let i = 0; i < particlesCount * 3; i+=3) {
             // Position: Spread particles in a wide area
-            posArray[i] = (Math.random() - 0.5) * 100;     // x
-            posArray[i+1] = (Math.random() - 0.5) * 100;   // y
-            posArray[i+2] = (Math.random() - 0.5) * 100;   // z
+            const x = (Math.random() - 0.5) * 100;
+            const y = (Math.random() - 0.5) * 100;
+            const z = (Math.random() - 0.5) * 100;
+            posArray[i] = x;
+            posArray[i+1] = y;
+            posArray[i+2] = z;
 
-            // Color: Mix between Cyan and Magenta based on position
-            mixedColor.copy(color1).lerp(color2, Math.random());
+            // Color: cyan near the center, magenta toward the edges
+            const distance = Math.min(Math.hypot(x, y, z) / 50, 1);
+            mixedColor.copy(color1).lerp(color2, distance);
             colorsArray[i] = mixedColor.r;
             colorsArray[i+1] = mixedColor.g;
             colorsArray[i+2] = mixedColor.b;

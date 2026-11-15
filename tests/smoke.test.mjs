@@ -44,6 +44,7 @@ check('keyboard pause and speed controls exist', html.includes("event.code === '
 check('R key resets the view', html.includes("event.key === 'r'") && html.includes('particlesMesh.rotation.set(0, 0, 0)'));
 check('pause shows a Paused badge', html.includes('id="paused-badge"') && html.includes(".hidden = !paused"));
 check('particle count can be set from the URL', html.includes('URLSearchParams') && html.includes("'particles'"));
+check('color follows distance from the center', html.includes('Math.hypot') && html.includes('lerp(color2, distance)'));
 check('reduced motion is honored', html.includes("prefers-reduced-motion: reduce"));
 check('live FPS stats are updated', html.includes('updateStats()') && html.includes('FPS'));
 

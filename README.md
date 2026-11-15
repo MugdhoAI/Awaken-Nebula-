@@ -32,7 +32,7 @@ The overlay shows the particle count and live FPS. If your system prefers reduce
 
 ## Features
 
-- 15,000 particles with a cyan to magenta gradient, positioned in a 100 unit cube
+- 15,000 particles with a cyan to magenta gradient that shifts with distance from the center, positioned in a 100 unit cube
 - Procedural circular sprite texture, no image files needed
 - Additive blending and fog for a glowing nebula look
 - Eased mouse rotation with a gentle breathing scale effect
