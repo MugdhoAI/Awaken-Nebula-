@@ -48,5 +48,8 @@ check('particle count can be set from the URL', html.includes('URLSearchParams')
 check('color follows distance from the center', html.includes('Math.hypot') && html.includes('lerp(color2, distance)'));
 check('reduced motion is honored', html.includes("prefers-reduced-motion: reduce"));
 check('live FPS stats are updated', html.includes('updateStats()') && html.includes('FPS'));
+check('rotation uses delta time', html.includes('clock.getDelta()') && html.includes('frameScale'));
+check('rotation increments are scaled by frame time', html.includes('0.002 * speedMultiplier * frameScale') && html.includes('targetX * 0.05 * frameScale') && html.includes('targetY * 0.05 * frameScale'));
+check('long frames are clamped before scaling', html.includes('Math.min(deltaTime, 0.1) * 60'));
 
 console.log('smoke test passed');

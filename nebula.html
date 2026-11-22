@@ -218,7 +218,15 @@
 
         function animate() {
             requestAnimationFrame(animate);
+            const deltaTime = clock.getDelta();
             const elapsedTime = clock.getElapsedTime();
+
+            // Scale per frame increments by elapsed frame time so the rotation
+            // speed is the same at any refresh rate. 60 FPS is the reference:
+            // frameScale is 1 there, 0.5 at 120 Hz, and 2 at 30 Hz. The delta
+            // is clamped so a long stall, such as a background tab, does not
+            // make the nebula jump on the next frame.
+            const frameScale = Math.min(deltaTime, 0.1) * 60;
 
             if (!paused) {
                 targetX = mouseX * 0.001;
@@ -226,9 +234,9 @@
 
                 // Rotation interaction with easing
                 // With reduced motion on, only the mouse rotates the scene
-                const autoSpeed = prefersReducedMotion ? 0 : 0.002 * speedMultiplier;
-                particlesMesh.rotation.y += autoSpeed + (targetX * 0.05); // Base speed + mouse influence
-                particlesMesh.rotation.x += (targetY * 0.05);
+                const autoSpeed = prefersReducedMotion ? 0 : 0.002 * speedMultiplier * frameScale;
+                particlesMesh.rotation.y += autoSpeed + (targetX * 0.05 * frameScale); // Base speed + mouse influence
+                particlesMesh.rotation.x += (targetY * 0.05 * frameScale);
 
                 // Gentle "breathing" scale effect, skipped for reduced motion
                 const breathe = prefersReducedMotion ? 0 : 0.05;
